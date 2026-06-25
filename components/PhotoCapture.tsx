@@ -9,12 +9,16 @@ interface PhotoCaptureProps {
 }
 
 type Mode = "idle" | "camera";
+type FacingMode = "environment" | "user";
 
 export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) {
   const [mode, setMode] = useState<Mode>("idle");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [facingMode, setFacingMode] = useState<FacingMode>("environment");
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+  const [switching, setSwitching] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -61,6 +65,41 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
     [onSelect],
   );
 
+  // Open a camera stream for the given facing mode, replacing any current one.
+  const openStream = useCallback(
+    async (facing: FacingMode) => {
+      stopCamera();
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: facing,
+          width: { ideal: 1280 },
+          height: { ideal: 960 },
+        },
+        audio: false,
+      });
+      streamRef.current = stream;
+      // If the <video> is already mounted (e.g. when flipping), attach directly.
+      // On first open it isn't mounted yet — the mode effect handles that.
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
+      return stream;
+    },
+    [stopCamera],
+  );
+
+  // Only offer the flip button when the device actually has more than one camera.
+  const detectCameras = useCallback(async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cams = devices.filter((d) => d.kind === "videoinput");
+      setHasMultipleCameras(cams.length > 1);
+    } catch {
+      // Leave the flip button hidden if enumeration isn't permitted.
+    }
+  }, []);
+
   const startCamera = useCallback(async () => {
     setError(null);
     setStarting(true);
@@ -68,16 +107,9 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("unsupported");
       }
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment",
-          width: { ideal: 1280 },
-          height: { ideal: 960 },
-        },
-        audio: false,
-      });
-      streamRef.current = stream;
+      await openStream(facingMode);
       setMode("camera");
+      detectCameras();
     } catch {
       // Fallback: trigger the native camera/file picker (great on mobile).
       stopCamera();
@@ -86,7 +118,28 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
     } finally {
       setStarting(false);
     }
-  }, [stopCamera]);
+  }, [openStream, facingMode, detectCameras, stopCamera]);
+
+  // Toggle between the front (user) and back (environment) cameras.
+  const flipCamera = useCallback(async () => {
+    if (switching) return;
+    const next: FacingMode = facingMode === "environment" ? "user" : "environment";
+    setSwitching(true);
+    setError(null);
+    try {
+      await openStream(next);
+      setFacingMode(next);
+    } catch {
+      setError("Couldn't switch camera. Trying to restore the previous one.");
+      try {
+        await openStream(facingMode);
+      } catch {
+        /* give up silently */
+      }
+    } finally {
+      setSwitching(false);
+    }
+  }, [switching, facingMode, openStream]);
 
   const capturePhoto = useCallback(() => {
     const video = videoRef.current;
@@ -98,6 +151,11 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
     canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    // Front camera is mirrored in the preview; mirror the capture to match.
+    if (facingMode === "user") {
+      ctx.translate(w, 0);
+      ctx.scale(-1, 1);
+    }
     ctx.drawImage(video, 0, 0, w, h);
     canvas.toBlob(
       (blob) => {
@@ -110,7 +168,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
       "image/jpeg",
       0.92,
     );
-  }, [applyFile, stopCamera]);
+  }, [applyFile, stopCamera, facingMode]);
 
   const cancelCamera = useCallback(() => {
     stopCamera();
@@ -132,13 +190,15 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
           ref={videoRef}
           playsInline
           muted
-          className="aspect-[4/3] w-full object-cover"
+          className={`aspect-[4/3] w-full object-cover ${
+            facingMode === "user" ? "-scale-x-100" : ""
+          }`}
         />
         <div className="flex items-center justify-between gap-3 bg-black/90 p-3">
           <button
             type="button"
             onClick={cancelCamera}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-white/80 hover:text-white"
+            className="w-20 rounded-lg px-2 py-2 text-left text-sm font-medium text-white/80 hover:text-white"
           >
             Cancel
           </button>
@@ -150,7 +210,20 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
             <span className="h-3 w-3 rounded-full bg-red-500" />
             Capture
           </button>
-          <span className="w-[68px]" aria-hidden />
+          <div className="flex w-20 justify-end">
+            {hasMultipleCameras ? (
+              <button
+                type="button"
+                onClick={flipCamera}
+                disabled={switching}
+                aria-label="Switch camera"
+                title="Switch camera"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-white/90 transition hover:bg-white/10 active:scale-95 disabled:opacity-50"
+              >
+                <FlipCameraIcon />
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
     );
@@ -269,6 +342,26 @@ function HiddenInputs({
         onChange={onChange}
       />
     </>
+  );
+}
+
+function FlipCameraIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+      <path d="M21 3v5h-5" />
+      <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+      <path d="M3 21v-5h5" />
+    </svg>
   );
 }
 

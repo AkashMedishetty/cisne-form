@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MAX_FILE_BYTES, MAX_FILE_MB } from "@/lib/validation";
+import { compressImageToLimit } from "@/lib/imageCompress";
 
 interface PhotoCaptureProps {
   onSelect: (file: File | null) => void;
@@ -19,6 +20,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
   const [facingMode, setFacingMode] = useState<FacingMode>("environment");
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
   const [switching, setSwitching] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -63,6 +65,28 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
       onSelect(file);
     },
     [onSelect],
+  );
+
+  // Accept a chosen/captured photo: if it's over the limit, compress it down to
+  // fit (so large uploads and captures are optimized instead of rejected).
+  const acceptFile = useCallback(
+    async (file: File) => {
+      setError(null);
+      if (file.size <= MAX_FILE_BYTES) {
+        applyFile(file);
+        return;
+      }
+      setProcessing(true);
+      try {
+        const optimized = await compressImageToLimit(file, MAX_FILE_BYTES);
+        applyFile(optimized); // applyFile re-checks size as a final safety net
+      } catch {
+        applyFile(file); // fall back; applyFile will surface a size error if needed
+      } finally {
+        setProcessing(false);
+      }
+    },
+    [applyFile],
   );
 
   // Open a camera stream for the given facing mode, replacing any current one.
@@ -161,14 +185,14 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
       (blob) => {
         if (!blob) return;
         const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
-        applyFile(file);
         stopCamera();
         setMode("idle");
+        void acceptFile(file);
       },
       "image/jpeg",
       0.92,
     );
-  }, [applyFile, stopCamera, facingMode]);
+  }, [acceptFile, stopCamera, facingMode]);
 
   const cancelCamera = useCallback(() => {
     stopCamera();
@@ -177,9 +201,10 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
 
   function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
-    applyFile(file);
     // Reset so selecting the same file again re-fires change.
     e.target.value = "";
+    if (file) void acceptFile(file);
+    else applyFile(null);
   }
 
   // --- Live camera view ---
@@ -281,7 +306,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <button
           type="button"
-          disabled={disabled || starting}
+          disabled={disabled || starting || processing}
           onClick={startCamera}
           className="group flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-7 text-center transition hover:border-brand hover:bg-brand-tint/40 disabled:opacity-50"
         >
@@ -294,15 +319,24 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
 
         <button
           type="button"
-          disabled={disabled}
+          disabled={disabled || processing}
           onClick={() => uploadInputRef.current?.click()}
           className="group flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-7 text-center transition hover:border-brand hover:bg-brand-tint/40 disabled:opacity-50"
         >
           <UploadIcon />
           <span className="text-sm font-semibold text-slate-800">Upload a photo</span>
-          <span className="text-xs text-slate-500">JPEG, PNG, WebP · max {MAX_FILE_MB} MB</span>
+          <span className="text-xs text-slate-500">
+            JPEG, PNG, WebP · large photos optimized automatically
+          </span>
         </button>
       </div>
+
+      {processing && (
+        <p className="flex items-center gap-2 text-sm text-slate-500" aria-live="polite">
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-brand" />
+          Optimizing photo…
+        </p>
+      )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

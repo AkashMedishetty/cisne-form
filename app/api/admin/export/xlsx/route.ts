@@ -10,7 +10,7 @@ export async function GET() {
   const docs = await submissions.find({}, { sort: { createdAt: -1 } }).toArray();
 
   const buffer = await buildWorkbookBuffer(docs);
-  const fileName = `cisne-submissions-${exportDateStamp(new Date())}.xlsx`;
+  const fileName = `cibc-submissions-${exportDateStamp(new Date())}.xlsx`;
 
   return new Response(buffer, {
     status: 200,

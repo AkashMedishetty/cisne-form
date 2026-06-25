@@ -60,13 +60,13 @@ export default function SubmissionForm() {
   if (status.kind === "success") {
     return (
       <div className="text-center">
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-teal-100">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-brand-tint2">
           <svg
             width="32"
             height="32"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#0f766e"
+            stroke="#c8102e"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -111,8 +111,8 @@ export default function SubmissionForm() {
           onChange={(e) => setName(e.target.value)}
           onBlur={() => setTouched((t) => ({ ...t, name: true }))}
           placeholder="Jane Doe"
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-teal-500/40 disabled:opacity-60 ${
-            nameError ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-teal-500"
+          className={`w-full rounded-xl border bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40 disabled:opacity-60 ${
+            nameError ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-brand"
           }`}
         />
         {nameError && <p className="mt-1 text-sm text-red-600">{nameError}</p>}
@@ -133,8 +133,8 @@ export default function SubmissionForm() {
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setTouched((t) => ({ ...t, email: true }))}
           placeholder="jane@example.com"
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-teal-500/40 disabled:opacity-60 ${
-            emailError ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-teal-500"
+          className={`w-full rounded-xl border bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-brand/40 disabled:opacity-60 ${
+            emailError ? "border-red-300 focus:border-red-400" : "border-slate-300 focus:border-brand"
           }`}
         />
         {emailError && <p className="mt-1 text-sm text-red-600">{emailError}</p>}
@@ -160,7 +160,7 @@ export default function SubmissionForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? (
           <>

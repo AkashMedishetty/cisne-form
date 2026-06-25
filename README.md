@@ -1,4 +1,4 @@
-# Cisne — Photo Submission + Admin
+# CIBC — Photo Submission + Admin
 
 A mobile-first web app where people submit their **name**, **email**, and a **photo**
 (uploaded or captured live from the camera). An admin panel lists every submission and
@@ -65,7 +65,7 @@ cp .env.example .env.local
 | Variable               | What it is                                                                 |
 | ---------------------- | -------------------------------------------------------------------------- |
 | `MONGODB_URI`          | MongoDB connection string (e.g. from MongoDB Atlas).                       |
-| `MONGODB_DB`           | Database name (optional, defaults to `cisne`).                             |
+| `MONGODB_DB`           | Database name (optional, defaults to `cibc`).                             |
 | `BLOB_READ_WRITE_TOKEN`| Vercel Blob read/write token.                                              |
 | `ADMIN_PASSWORD`       | The password for `/admin`.                                                 |
 | `ADMIN_SESSION_SECRET` | Long random string used to sign the session cookie (`openssl rand -base64 48`). |

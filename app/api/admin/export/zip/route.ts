@@ -66,7 +66,7 @@ export async function GET() {
     compressionOptions: { level: 6 },
   });
 
-  const fileName = `cisne-export-${exportDateStamp(new Date())}.zip`;
+  const fileName = `cibc-export-${exportDateStamp(new Date())}.zip`;
 
   return new Response(new Uint8Array(content), {
     status: 200,

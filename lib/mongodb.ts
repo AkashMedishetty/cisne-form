@@ -42,7 +42,7 @@ function getClientPromise(): Promise<MongoClient> {
 
 export async function getDb(): Promise<Db> {
   const client = await getClientPromise();
-  return client.db(process.env.MONGODB_DB || "cisne");
+  return client.db(process.env.MONGODB_DB || "cibc");
 }
 
 let indexEnsured = false;

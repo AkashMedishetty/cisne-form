@@ -7,7 +7,7 @@ export async function buildWorkbookBuffer(
   docs: WithId<SubmissionDoc>[],
 ): Promise<Uint8Array<ArrayBuffer>> {
   const wb = new ExcelJS.Workbook();
-  wb.creator = "Cisne";
+  wb.creator = "CIBC";
   wb.created = docs[0]?.createdAt ?? new Date(0);
 
   const ws = wb.addWorksheet("Submissions", {

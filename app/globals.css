@@ -2,8 +2,10 @@
 
 @theme {
   --color-ink: #0b1120;
-  --color-brand: #0f766e;
-  --color-brand-dark: #115e59;
+  --color-brand: #c8102e; /* CIBC red */
+  --color-brand-dark: #a00d25;
+  --color-brand-tint: #fdecee; /* very light red */
+  --color-brand-tint2: #fbd9dd; /* light red */
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
 }
@@ -20,7 +22,7 @@ body {
 
 body {
   background:
-    radial-gradient(1200px 600px at 50% -10%, #e6fffb 0%, transparent 55%),
+    radial-gradient(1200px 600px at 50% -10%, #fdecee 0%, transparent 55%),
     linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;

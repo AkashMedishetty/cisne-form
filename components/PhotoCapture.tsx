@@ -210,7 +210,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
           type="button"
           disabled={disabled || starting}
           onClick={startCamera}
-          className="group flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-7 text-center transition hover:border-teal-500 hover:bg-teal-50/40 disabled:opacity-50"
+          className="group flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-7 text-center transition hover:border-brand hover:bg-brand-tint/40 disabled:opacity-50"
         >
           <CameraIcon />
           <span className="text-sm font-semibold text-slate-800">
@@ -223,7 +223,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
           type="button"
           disabled={disabled}
           onClick={() => uploadInputRef.current?.click()}
-          className="group flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-7 text-center transition hover:border-teal-500 hover:bg-teal-50/40 disabled:opacity-50"
+          className="group flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-7 text-center transition hover:border-brand hover:bg-brand-tint/40 disabled:opacity-50"
         >
           <UploadIcon />
           <span className="text-sm font-semibold text-slate-800">Upload a photo</span>
@@ -283,7 +283,7 @@ function CameraIcon() {
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="text-teal-600"
+      className="text-brand"
     >
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
       <circle cx="12" cy="13" r="4" />
@@ -302,7 +302,7 @@ function UploadIcon() {
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="text-teal-600"
+      className="text-brand"
     >
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       <polyline points="17 8 12 3 7 8" />

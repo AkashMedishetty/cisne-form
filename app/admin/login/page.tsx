@@ -41,6 +41,8 @@ function LoginForm() {
       onSubmit={handleSubmit}
       className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white/90 p-7 shadow-xl backdrop-blur"
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo.png" alt="CIBC" width={140} height={36} className="mb-5 h-auto w-[140px]" />
       <h1 className="text-xl font-semibold text-slate-900">Admin sign in</h1>
       <p className="mt-1 text-sm text-slate-500">Enter the admin password to continue.</p>
 
@@ -54,7 +56,7 @@ function LoginForm() {
         autoComplete="current-password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40"
+        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/40"
         placeholder="••••••••"
       />
 

@@ -111,7 +111,7 @@ export default function AdminDashboard() {
           </a>
           <a
             href="/api/admin/export/zip"
-            className="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+            className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
           >
             Export ZIP (photos + sheet)
           </a>
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by name or email…"
-          className="w-full max-w-md rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40"
+          className="w-full max-w-md rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-brand focus:ring-2 focus:ring-brand/40"
         />
       </div>
 

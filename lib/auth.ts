@@ -1,10 +1,10 @@
 import { SignJWT, jwtVerify } from "jose";
 
 // Name of the cookie that holds the admin session JWT.
-export const SESSION_COOKIE = "cisne_admin";
+export const SESSION_COOKIE = "cibc_admin";
 
-const ISSUER = "cisne";
-const AUDIENCE = "cisne-admin";
+const ISSUER = "cibc";
+const AUDIENCE = "cibc-admin";
 
 function getSecret(): Uint8Array {
   const secret = process.env.ADMIN_SESSION_SECRET;

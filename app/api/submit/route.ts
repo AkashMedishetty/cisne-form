@@ -7,6 +7,7 @@ import {
   normalizeEmail,
   isAllowedImageType,
   MAX_FILE_BYTES,
+  MAX_FILE_MB,
 } from "@/lib/validation";
 import { slugifyName, extensionForType } from "@/lib/slug";
 
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
   }
   if (photo.size > MAX_FILE_BYTES) {
     return NextResponse.json(
-      { error: "Photo is too large. Maximum size is 10 MB." },
+      { error: `Photo is too large. Maximum size is ${MAX_FILE_MB} MB.` },
       { status: 413 },
     );
   }

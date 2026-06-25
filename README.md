@@ -101,7 +101,8 @@ npm run dev
 
 ## Notes & limits
 
-- Max photo size: **10 MB** (`lib/validation.ts` → `MAX_FILE_BYTES`).
+- Max photo size: **4 MB** (`lib/validation.ts` → `MAX_FILE_MB`), kept under Vercel's
+  ~4.5 MB serverless request body limit. Enforced on both the client and server.
 - Accepted types: JPEG, PNG, WebP, HEIC/HEIF.
 - The ZIP export downloads every photo into memory to build the archive; for very
   large datasets (thousands of large photos) consider a streaming/background job.

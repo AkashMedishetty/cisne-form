@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import PhotoCapture from "@/components/PhotoCapture";
-import { isValidEmail, isValidName } from "@/lib/validation";
+import { isValidEmail, isValidName, MAX_FILE_MB } from "@/lib/validation";
 
 type Status =
   | { kind: "idle" }
@@ -144,7 +144,10 @@ export default function SubmissionForm() {
       </div>
 
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-slate-700">Photo</span>
+        <div className="mb-1.5 flex items-baseline justify-between">
+          <span className="text-sm font-medium text-slate-700">Photo</span>
+          <span className="text-xs text-slate-500">Max {MAX_FILE_MB} MB</span>
+        </div>
         <PhotoCapture onSelect={setPhoto} disabled={submitting} />
       </div>
 

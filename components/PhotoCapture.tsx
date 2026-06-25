@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MAX_FILE_BYTES, MAX_FILE_MB } from "@/lib/validation";
 
 interface PhotoCaptureProps {
   onSelect: (file: File | null) => void;
@@ -42,6 +43,14 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
 
   const applyFile = useCallback(
     (file: File | null) => {
+      // Enforce the size limit on the client for instant feedback. Keep any
+      // previously valid photo and surface an error for the oversized one.
+      if (file && file.size > MAX_FILE_BYTES) {
+        setError(
+          `That photo is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Please choose one under ${MAX_FILE_MB} MB.`,
+        );
+        return;
+      }
       setPreviewUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return file ? URL.createObjectURL(file) : null;
@@ -183,6 +192,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
             Remove
           </button>
         </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
         <HiddenInputs
           uploadRef={uploadInputRef}
           captureRef={captureInputRef}
@@ -217,7 +227,7 @@ export default function PhotoCapture({ onSelect, disabled }: PhotoCaptureProps) 
         >
           <UploadIcon />
           <span className="text-sm font-semibold text-slate-800">Upload a photo</span>
-          <span className="text-xs text-slate-500">JPEG, PNG, WebP · max 10 MB</span>
+          <span className="text-xs text-slate-500">JPEG, PNG, WebP · max {MAX_FILE_MB} MB</span>
         </button>
       </div>
 

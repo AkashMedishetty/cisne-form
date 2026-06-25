@@ -19,7 +19,8 @@ export function isValidName(name: string): boolean {
   return value.length >= 2 && value.length <= 100;
 }
 
-export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
+export const MAX_FILE_MB = 4; // kept under Vercel's ~4.5 MB request body limit
+export const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
 
 export const ALLOWED_IMAGE_TYPES = [
   "image/jpeg",
